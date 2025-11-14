@@ -1,0 +1,9 @@
+{
+  // Ruta al ejecutable de PHP para la validación integrada
+  "php.validate.executablePath": "C:\\xampp\\php\\php.exe",
+
+  // Configuración para Intelephense (si la usas)
+  "intelephense.environment.phpVersion": "8.2.0",
+  // Desactivar comprobación de variables indefinidas si Intelephense genera falsos positivos
+  "intelephense.diagnostics.undefinedVariables": false
+}
