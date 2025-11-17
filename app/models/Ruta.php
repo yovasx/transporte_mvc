@@ -41,19 +41,21 @@ class Ruta {
 
     // Crear nueva ruta
     public function crear($data) {
-        $query = "INSERT INTO " . $this->table . " 
-                 (nombre_ruta, hora_inicio, hora_final, estado, id_linea) 
-                 VALUES (:nombre_ruta, :hora_inicio, :hora_final, :estado, :id_linea)";
-        
+        $query = "INSERT INTO " . $this->table . "
+                 (nombre_ruta, hora_inicio, hora_final, estado, id_linea, puntos)
+                 VALUES (:nombre_ruta, :hora_inicio, :hora_final, :estado, :id_linea, :puntos)";
+
         $stmt = $this->conn->prepare($query);
         // Normalizar id_linea: si viene vacío ('') usar NULL para no violar FK
         $id_linea = (isset($data['id_linea']) && $data['id_linea'] !== '') ? $data['id_linea'] : null;
+        $puntos = isset($data['puntos']) ? $data['puntos'] : null;
         return $stmt->execute([
             ':nombre_ruta' => $data['nombre_ruta'],
             ':hora_inicio' => $data['hora_inicio'],
             ':hora_final' => $data['hora_final'],
             ':estado' => isset($data['estado']) ? $data['estado'] : 'Activo',
-            ':id_linea' => $id_linea
+            ':id_linea' => $id_linea,
+            ':puntos' => $puntos
         ]);
     }
 
@@ -70,20 +72,22 @@ class Ruta {
 
     // Actualizar ruta
     public function actualizar($id, $data) {
-        $query = "UPDATE " . $this->table . " 
-                 SET nombre_ruta = :nombre_ruta, hora_inicio = :hora_inicio, 
-                     hora_final = :hora_final, estado = :estado, id_linea = :id_linea
+        $query = "UPDATE " . $this->table . "
+                 SET nombre_ruta = :nombre_ruta, hora_inicio = :hora_inicio,
+                     hora_final = :hora_final, estado = :estado, id_linea = :id_linea, puntos = :puntos
                  WHERE id_ruta = :id";
-        
+
         $stmt = $this->conn->prepare($query);
         // Normalizar id_linea: si viene vacío ('') usar NULL
         $id_linea = (isset($data['id_linea']) && $data['id_linea'] !== '') ? $data['id_linea'] : null;
+        $puntos = isset($data['puntos']) ? $data['puntos'] : null;
         return $stmt->execute([
             ':nombre_ruta' => $data['nombre_ruta'],
             ':hora_inicio' => $data['hora_inicio'],
             ':hora_final' => $data['hora_final'],
             ':estado' => isset($data['estado']) ? $data['estado'] : 'Activo',
             ':id_linea' => $id_linea,
+            ':puntos' => $puntos,
             ':id' => $id
         ]);
     }
@@ -131,6 +135,13 @@ class Ruta {
         $stmt->execute();
         $result = $stmt->fetch();
         return $result['total'] ?? 0;
+    }
+
+    // Guardar puntos de ruta (para mapa)
+    public function guardarPuntos($id_ruta, $puntos) {
+        $query = "UPDATE " . $this->table . " SET puntos = ? WHERE id_ruta = ?";
+        $stmt = $this->conn->prepare($query);
+        return $stmt->execute([json_encode($puntos), $id_ruta]);
     }
 }
 ?>

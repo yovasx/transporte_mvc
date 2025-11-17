@@ -265,4 +265,51 @@ $(document).on('minimized.lte.cardwidget', function(event) {
         map.invalidateSize();
     }, 100);
 });
+
+// Funcionalidad de geolocalización y parada más cercana
+$('#btnUbicacion').click(function() {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function(position) {
+            var lat = position.coords.latitude;
+            var lng = position.coords.longitude;
+            var userLocation = L.marker([lat, lng]).addTo(map)
+                .bindPopup('Tu ubicación actual')
+                .openPopup();
+            map.setView([lat, lng], 15);
+        }, function(error) {
+            alert('Error al obtener la ubicación: ' + error.message);
+        });
+    } else {
+        alert('Geolocalización no soportada por este navegador.');
+    }
+});
+
+$('#btnOptima').click(function() {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function(position) {
+            var userLat = position.coords.latitude;
+            var userLng = position.coords.longitude;
+            var closestParada = null;
+            var minDistance = Infinity;
+            markers.forEach(function(marker) {
+                var latlng = marker.getLatLng();
+                var distance = map.distance([userLat, userLng], latlng);
+                if (distance < minDistance) {
+                    minDistance = distance;
+                    closestParada = marker;
+                }
+            });
+            if (closestParada) {
+                map.setView(closestParada.getLatLng(), 15);
+                closestParada.openPopup();
+            } else {
+                alert('No se encontraron paradas cercanas.');
+            }
+        }, function(error) {
+            alert('Error al obtener la ubicación: ' + error.message);
+        });
+    } else {
+        alert('Geolocalización no soportada por este navegador.');
+    }
+});
 </script>

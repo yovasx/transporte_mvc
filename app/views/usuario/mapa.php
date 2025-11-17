@@ -1,21 +1,15 @@
-<!-- Mapa de Rutas Interactivo -->
+<!-- Mapa de Rutas para Usuarios -->
 <div class="container-fluid p-0">
     <div class="row justify-content-center">
         <div class="col-12">
             <div class="card shadow-sm">
                 <div class="card-header py-2">
                     <h3 class="card-title mb-0">
-                        <i class="fas fa-map-marked-alt mr-2"></i>Mapa de Rutas Interactivo
+                        <i class="fas fa-map-marked-alt mr-2"></i>Mapa de Rutas
                     </h3>
                 </div>
                 <div class="card-body p-2">
                     <div class="buttons text-center mb-3">
-                        <button id="btnParada" class="btn btn-primary mr-2">
-                            <i class="fas fa-map-marker-alt"></i> Añadir Parada
-                        </button>
-                        <button id="btnRuta" class="btn btn-success mr-2">
-                            <i class="fas fa-route"></i> Crear Ruta
-                        </button>
                         <button id="btnUbicacion" class="btn btn-info mr-2">
                             <i class="fas fa-crosshairs"></i> Mi Ubicación
                         </button>
@@ -44,9 +38,6 @@ document.addEventListener('DOMContentLoaded', function() {
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(map);
 
-        let modoParada = false;
-        let modoRuta = false;
-        let puntosRuta = [];
         let paradas = [];
         let rutas = [];
         let userMarker = null;
@@ -92,116 +83,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
         cargarParadas();
         cargarRutas();
-
-        // Botones
-        document.getElementById('btnParada').addEventListener('click', () => {
-            modoParada = !modoParada;
-            modoRuta = false;
-            puntosRuta = [];
-            const btn = document.getElementById('btnParada');
-            if (modoParada) {
-                btn.classList.add('btn-danger');
-                btn.innerHTML = '<i class="fas fa-times"></i> Cancelar Parada';
-                alert('Haz clic en el mapa para añadir una parada');
-            } else {
-                btn.classList.remove('btn-danger');
-                btn.innerHTML = '<i class="fas fa-map-marker-alt"></i> Añadir Parada';
-            }
-        });
-
-        document.getElementById('btnRuta').addEventListener('click', () => {
-            modoRuta = !modoRuta;
-            modoParada = false;
-            if (!modoRuta) {
-                puntosRuta = [];
-            }
-            const btn = document.getElementById('btnRuta');
-            if (modoRuta) {
-                btn.classList.add('btn-danger');
-                btn.innerHTML = '<i class="fas fa-times"></i> Cancelar Ruta';
-                alert('Haz clic en el mapa para trazar la ruta. Doble clic para guardar.');
-            } else {
-                btn.classList.remove('btn-danger');
-                btn.innerHTML = '<i class="fas fa-route"></i> Crear Ruta';
-            }
-        });
-
-        // Eventos del mapa
-        map.on('click', async (e) => {
-            if (modoParada) {
-                const { lat, lng } = e.latlng;
-                const nombre = prompt('Nombre de la parada:', 'Parada sin nombre');
-                if (nombre !== null) {
-                    try {
-                        const formData = new FormData();
-                        formData.append('latitud', lat);
-                        formData.append('longitud', lng);
-                        formData.append('nombre_parada', nombre);
-
-                        const res = await fetch('<?php echo BASE_URL; ?>/mapa/guardarParada', {
-                            method: 'POST',
-                            body: formData
-                        });
-                        const result = await res.json();
-
-                        if (result.status === 'ok') {
-                            L.marker([lat, lng]).addTo(map)
-                                .bindPopup(`<b>${nombre}</b>`);
-                            paradas.push({ latitud: lat, longitud: lng, nombre_parada: nombre });
-                            alert('Parada guardada correctamente');
-                        } else {
-                            alert('Error: ' + result.message);
-                        }
-                    } catch (error) {
-                        alert('Error al guardar parada');
-                    }
-                }
-                modoParada = false;
-                document.getElementById('btnParada').classList.remove('btn-danger');
-                document.getElementById('btnParada').innerHTML = '<i class="fas fa-map-marker-alt"></i> Añadir Parada';
-            }
-
-            if (modoRuta) {
-                puntosRuta.push([e.latlng.lat, e.latlng.lng]);
-                if (puntosRuta.length > 1) {
-                    L.polyline(puntosRuta, { color: 'red', weight: 3, dashArray: '5,10' }).addTo(map);
-                }
-            }
-        });
-
-        map.on('dblclick', async () => {
-            if (modoRuta && puntosRuta.length > 1) {
-                const nombre = prompt('Nombre de la ruta:');
-                if (nombre) {
-                    try {
-                        const formData = new FormData();
-                        formData.append('nombre', nombre);
-                        formData.append('puntos', JSON.stringify(puntosRuta));
-
-                        const res = await fetch('<?php echo BASE_URL; ?>/mapa/guardarRuta', {
-                            method: 'POST',
-                            body: formData
-                        });
-                        const result = await res.json();
-
-                        if (result.status === 'ok') {
-                            const polyline = L.polyline(puntosRuta, { color: 'blue', weight: 3 }).addTo(map);
-                            polyline.bindPopup(`<b>${nombre}</b>`);
-                            rutaPolylines.push(polyline);
-                            alert('Ruta guardada correctamente');
-                        } else {
-                            alert('Error: ' + result.message);
-                        }
-                    } catch (error) {
-                        alert('Error al guardar ruta');
-                    }
-                }
-                puntosRuta = [];
-                modoRuta = false;
-                document.getElementById('btnRuta').classList.remove('btn-danger');
-                document.getElementById('btnRuta').innerHTML = '<i class="fas fa-route"></i> Crear Ruta';
-            }
-        });
 
         // Ubicación del usuario
         document.getElementById('btnUbicacion').addEventListener('click', () => {

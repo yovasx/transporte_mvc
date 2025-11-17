@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 12-11-2025 a las 03:20:55
+-- Tiempo de generación: 17-11-2025 a las 20:07:32
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -54,9 +54,12 @@ CREATE TABLE `parada` (
 --
 
 INSERT INTO `parada` (`id_parada`, `nombre_parada`, `latitud`, `longitud`, `estado`) VALUES
-(1, 'plaza del estudiante', 19.4326, -99.1332, 'Activo'),
-(4, 'plaza del estudiante', 19.4326, -99.1332, 'Activo'),
-(5, 'plaza del estudiante', 19.4326, -99.1332, 'Inactivo');
+(1, 'plaza del estudiante', -16.5, -68.15, 'Activo'),
+(4, 'stadium', -16.52, -68.13, 'Activo'),
+(5, 'plaza del estudiante', 19.4326, -99.1332, 'Inactivo'),
+(6, 'primera parada', -16.505, -68.1315, 'Activo'),
+(7, 'centro random', -16.4983, -68.1353, 'Inactivo'),
+(8, 'Prueba', -16.4913, -68.1395, 'Activo');
 
 -- --------------------------------------------------------
 
@@ -70,17 +73,20 @@ CREATE TABLE `ruta` (
   `hora_inicio` time DEFAULT NULL,
   `hora_final` time DEFAULT NULL,
   `estado` enum('Activo','Inactivo') DEFAULT 'Activo',
-  `id_linea` int(11) DEFAULT NULL
+  `id_linea` int(11) DEFAULT NULL,
+  `puntos` longtext DEFAULT NULL COMMENT 'Puntos de la ruta en formato JSON'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Volcado de datos para la tabla `ruta`
 --
 
-INSERT INTO `ruta` (`id_ruta`, `nombre_ruta`, `hora_inicio`, `hora_final`, `estado`, `id_linea`) VALUES
-(1, 'ruta1', '01:00:00', '02:00:00', 'Activo', NULL),
-(2, 'ruta2', '01:00:00', '02:00:00', 'Activo', NULL),
-(3, 'ruta3', '01:00:00', '02:00:00', 'Activo', NULL);
+INSERT INTO `ruta` (`id_ruta`, `nombre_ruta`, `hora_inicio`, `hora_final`, `estado`, `id_linea`, `puntos`) VALUES
+(1, '143', '01:00:00', '02:00:00', 'Activo', NULL, NULL),
+(2, '234', '01:00:00', '02:00:00', 'Activo', NULL, NULL),
+(3, 'ruta3', '01:00:00', '02:00:00', 'Inactivo', NULL, NULL),
+(7, '201', '06:00:00', '23:00:00', 'Activo', NULL, NULL),
+(8, '14 de septiembre', '06:00:00', '23:00:00', 'Inactivo', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -135,11 +141,14 @@ CREATE TABLE `usuario` (
 
 INSERT INTO `usuario` (`id_usuario`, `nombre`, `apellido_paterno`, `correo`, `direccion`, `telefono`, `password`, `rol`, `estado`, `apellido_materno`) VALUES
 (1, 'victor', 'gutierrez', 'victor@gmail.com', 'av. 6 de marzo', '68544345', NULL, 'usuario', 'Activo', 'colque'),
-(10, 'juan', 'perez', 'juanito@gmail.com', '6 de agosto', '742345345', NULL, 'usuario', 'Activo', 'guzman'),
+(10, 'juan', 'perez', 'juanito@gmail.com', '6 de agosto', '742345344', NULL, 'usuario', 'Activo', 'guzman'),
 (13, 'pedro', 'callizaya', 'pedro123@gmail.com', 'av. buch', '734243', NULL, 'usuario', 'Activo', 'perez'),
 (42, 'ijbiñi', 'tik', 'ijbinipro@gmail.com', 'calle_de_la_seriedad', '666', NULL, 'usuario', 'Inactivo', 'tok'),
 (43, 'pedro', 'vargas', 'pedrito@gmail.com', 'av. arce', '68544345', '$2y$10$FG03r.JQ4bZfpLRPEbOEY.6pdECtUV0GZeiE3k5L8Dy7jHR63mWIi', 'usuario', 'Activo', 'perez'),
-(44, 'yovani', 'Andia', 'yovas@gmail.com', 'Santiago II', '69961678', '$2y$10$SKwZ0r.wfz4QX8ffzzZrGOmPwnXCw1Bu8u.u3.DKMs/RJNRAOblDW', 'usuario', 'Activo', 'Quispe');
+(44, 'yovani', 'Andia', 'yovas@gmail.com', 'Santiago II', '69961678', '$2y$10$SKwZ0r.wfz4QX8ffzzZrGOmPwnXCw1Bu8u.u3.DKMs/RJNRAOblDW', 'admin', 'Activo', 'Quispe'),
+(45, 'valeria', 'mendez', 'vale@gmail.com', 'av. buch', '75644765', '$2y$10$Iq5cTrk9d5eDhEggNbow4.wY4ynh6Gl8DPexkkRmgfk7Cu9xmnZJK', 'usuario', 'Activo', 'gutierrez'),
+(46, 'luis', 'pardo', 'luis@gmail.com', 'buenos aires', '64837647', '$2y$10$c4Ba1lFarIOVQC0SVs8WNOmYeGjGiZqXQaybgKfDLP1FksKAm8feC', 'usuario', 'Activo', 'condori'),
+(47, 'carlos', 'aliaga', 'carlos@gmail.com', 'plaza virroel', '788223', '$2y$10$4f.PAf40yDWbCA0EYmjjMOv1Wiinw9cuWGWEBNLzi89TMfBjgriRO', 'usuario', 'Activo', 'vasquez');
 
 --
 -- Índices para tablas volcadas
@@ -198,13 +207,13 @@ ALTER TABLE `linea`
 -- AUTO_INCREMENT de la tabla `parada`
 --
 ALTER TABLE `parada`
-  MODIFY `id_parada` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id_parada` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT de la tabla `ruta`
 --
 ALTER TABLE `ruta`
-  MODIFY `id_ruta` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id_ruta` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT de la tabla `sindicato`
@@ -222,7 +231,7 @@ ALTER TABLE `tarifa`
 -- AUTO_INCREMENT de la tabla `usuario`
 --
 ALTER TABLE `usuario`
-  MODIFY `id_usuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=45;
+  MODIFY `id_usuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=48;
 
 --
 -- Restricciones para tablas volcadas
