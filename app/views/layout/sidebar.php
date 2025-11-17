@@ -14,22 +14,25 @@
                 <img src="https://cdnjs.cloudflare.com/ajax/libs/admin-lte/3.2.0/img/user2-160x160.jpg" class="img-circle elevation-2" alt="User Image">
             </div>
             <div class="info">
-                <a href="#" class="d-block">Administrador</a>
+                <a href="#" class="d-block"><?php echo $_SESSION['usuario_nombre'] ?? 'Usuario'; ?></a>
+                <small class="text-muted"><?php echo ucfirst($_SESSION['usuario_rol'] ?? 'usuario'); ?></small>
             </div>
         </div>
 
         <!-- Sidebar Menu -->
         <nav class="mt-2">
             <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
-                
+
                 <li class="nav-item">
-                    <a href="<?php echo BASE_URL; ?>/dashboard" class="nav-link <?php echo ($page == 'dashboard') ? 'active' : ''; ?>">
+                    <a href="<?php echo BASE_URL; ?>/dashboard" class="nav-link <?php echo ($page == 'dashboard' || $page == 'usuario_dashboard') ? 'active' : ''; ?>">
                         <i class="nav-icon fas fa-tachometer-alt"></i>
                         <p>Dashboard</p>
                     </a>
                 </li>
 
-                <li class="nav-header">GESTIÓN</li>
+                <?php if (isset($_SESSION['usuario_rol']) && $_SESSION['usuario_rol'] === 'admin'): ?>
+                <!-- Menú de Administrador -->
+                <li class="nav-header">ADMINISTRACIÓN</li>
 
                 <li class="nav-item">
                     <a href="<?php echo BASE_URL; ?>/usuarios" class="nav-link <?php echo ($page == 'usuarios') ? 'active' : ''; ?>">
@@ -60,6 +63,10 @@
                         <p>Reportes</p>
                     </a>
                 </li>
+                <?php endif; ?>
+
+                <!-- Menú común para todos los usuarios -->
+                <li class="nav-header">SERVICIOS</li>
 
                 <li class="nav-item">
                     <a href="<?php echo BASE_URL; ?>/dashboard/mapa" class="nav-link <?php echo ($page == 'mapa') ? 'active' : ''; ?>">
@@ -67,6 +74,15 @@
                         <p>Mapa de Rutas</p>
                     </a>
                 </li>
+
+                <?php if (isset($_SESSION['usuario_rol']) && $_SESSION['usuario_rol'] === 'usuario'): ?>
+                <li class="nav-item">
+                    <a href="<?php echo BASE_URL; ?>/usuario/buscar" class="nav-link <?php echo ($page == 'buscar_rutas') ? 'active' : ''; ?>">
+                        <i class="nav-icon fas fa-search"></i>
+                        <p>Buscar Rutas</p>
+                    </a>
+                </li>
+                <?php endif; ?>
 
             </ul>
         </nav>

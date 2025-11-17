@@ -1,56 +1,114 @@
 <?php
 class DashboardController extends Controller {
-    
-    public function index() {
-        // Verificar si está logueado para mostrar datos reales o demo
-        $isLoggedIn = isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true;
-        
-            // Obtener datos reales de la base de datos
-            $usuarioModel = $this->model('Usuario');
-            $rutaModel = $this->model('Ruta');
-            $paradaModel = $this->model('Parada');
-        
-            try {
-                $totalUsuarios = $usuarioModel->getTotalUsuarios();
-                $totalRutas = $rutaModel->getTotalRutas();
-                $totalParadas = $paradaModel->getTotalParadas();
-                $rutasActivas = $totalRutas; // Las rutas activas son las mismas que el total activo
-            } catch(Exception $e) {
-                // Valores por defecto si hay error
-                $totalUsuarios = 0;
-                $totalRutas = 0;
-                $totalParadas = 0;
-                $rutasActivas = 0;
-            }
 
-        // Obtener usuarios recientes (solo para dashboard privado)
+    public function index() {
+        // Verificar si está logueado
+        if (!Auth::isLoggedIn()) {
+            // Mostrar dashboard público
+            $this->publicDashboard();
+            return;
+        }
+
+        // Redirigir según rol
+        if (Auth::isAdmin()) {
+            $this->adminDashboard();
+        } else {
+            $this->usuarioDashboard();
+        }
+    }
+
+    private function publicDashboard() {
+        // Dashboard público - mostrar estadísticas sin login
+        $usuarioModel = $this->model('Usuario');
+        $rutaModel = $this->model('Ruta');
+        $paradaModel = $this->model('Parada');
+
+        try {
+            $totalUsuarios = $usuarioModel->getTotalUsuarios();
+            $totalRutas = $rutaModel->getTotalRutas();
+            $totalParadas = $paradaModel->getTotalParadas();
+            $rutasActivas = $totalRutas;
+        } catch(Exception $e) {
+            $totalUsuarios = 0;
+            $totalRutas = 0;
+            $totalParadas = 0;
+            $rutasActivas = 0;
+        }
+
+        $data = [
+            'title' => 'MoviMap - Gestión de Transporte',
+            'totalUsuarios' => $totalUsuarios,
+            'totalRutas' => $totalRutas,
+            'totalParadas' => $totalParadas,
+            'rutasActivas' => $rutasActivas,
+            'isLoggedIn' => false
+        ];
+
+        $this->viewPublic('dashboard/public', $data);
+    }
+
+    private function adminDashboard() {
+        // Obtener datos reales de la base de datos para admin
+        $usuarioModel = $this->model('Usuario');
+        $rutaModel = $this->model('Ruta');
+        $paradaModel = $this->model('Parada');
+
+        try {
+            $totalUsuarios = $usuarioModel->getTotalUsuarios();
+            $totalRutas = $rutaModel->getTotalRutas();
+            $totalParadas = $paradaModel->getTotalParadas();
+            $rutasActivas = $totalRutas;
+        } catch(Exception $e) {
+            $totalUsuarios = 0;
+            $totalRutas = 0;
+            $totalParadas = 0;
+            $rutasActivas = 0;
+        }
+
         $usuariosRecientes = $usuarioModel->getRecientes(5);
         $data = [
-            'title' => 'MoviMap - Inicio',
+            'title' => 'Panel de Administración - MoviMap',
             'page' => 'dashboard',
-            'isLoggedIn' => $isLoggedIn,
             'totalUsuarios' => $totalUsuarios,
             'totalRutas' => $totalRutas,
             'totalParadas' => $totalParadas,
             'rutasActivas' => $rutasActivas,
             'usuario_nombre' => $_SESSION['usuario_nombre'] ?? null,
-            'usuariosRecientes' => $usuariosRecientes
+            'usuariosRecientes' => $usuariosRecientes,
+            'rol' => 'admin'
         ];
-        
-        // Si no está logueado, usar layout público
-        if(!$isLoggedIn) {
-            $this->viewPublic('dashboard/public', $data);
-        } else {
-            $this->view('dashboard/index', $data);
+
+        $this->view('dashboard/index', $data);
+    }
+
+    private function usuarioDashboard() {
+        // Dashboard para usuarios normales - búsqueda de rutas
+        $rutaModel = $this->model('Ruta');
+        $paradaModel = $this->model('Parada');
+
+        try {
+            $rutas = $rutaModel->getAll();
+            $paradas = $paradaModel->getAll();
+        } catch(Exception $e) {
+            $rutas = [];
+            $paradas = [];
         }
+
+        $data = [
+            'title' => 'Buscar Rutas - MoviMap',
+            'page' => 'usuario_dashboard',
+            'rutas' => $rutas,
+            'paradas' => $paradas,
+            'usuario_nombre' => $_SESSION['usuario_nombre'] ?? null,
+            'rol' => 'usuario'
+        ];
+
+        $this->view('usuario/dashboard', $data);
     }
 
     public function mapa() {
         // Verificar si está logueado
-        if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
-            header('Location: ' . BASE_URL . '/login');
-            exit;
-        }
+        Auth::requireLogin();
 
         $data = [
             'title' => 'Mapa de Rutas - MoviMap',

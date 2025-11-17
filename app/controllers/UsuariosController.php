@@ -1,9 +1,12 @@
 <?php
 class UsuariosController extends Controller {
-    
+
     public function index() {
+        // Solo admins pueden ver la lista de usuarios
+        Auth::requireAdmin();
+
         $usuarioModel = $this->model('Usuario');
-        
+
         try {
             $usuarios = $usuarioModel->getAll();
             $data = [
@@ -24,17 +27,25 @@ class UsuariosController extends Controller {
     }
 
     public function crear() {
+        // Solo admins pueden crear usuarios
+        Auth::requireAdmin();
+
         $data = [
             'title' => 'Registrar Nuevo Usuario',
             'page' => 'usuarios'
         ];
-        
+
         if($_POST) {
             $usuarioModel = $this->model('Usuario');
-            
+
+            // Asignar rol por defecto 'usuario' si no se especifica
+            if (!isset($_POST['rol']) || empty($_POST['rol'])) {
+                $_POST['rol'] = 'usuario';
+            }
+
             // Validaciones
             $errors = $this->validarUsuario($_POST);
-            
+
             if(empty($errors)) {
                 try {
                     if($usuarioModel->crear($_POST)) {
@@ -51,7 +62,7 @@ class UsuariosController extends Controller {
                 $data['form_data'] = $_POST;
             }
         }
-        
+
         $this->view('usuarios/crear', $data);
     }
 
@@ -60,24 +71,27 @@ class UsuariosController extends Controller {
             $_SESSION['error'] = 'ID de usuario no especificado';
             $this->redirect('usuarios');
         }
-        
+
+        // Solo admins pueden editar usuarios
+        Auth::requireAdmin();
+
         $usuarioModel = $this->model('Usuario');
         $usuario = $usuarioModel->getById($id);
-        
+
         if(!$usuario) {
             $_SESSION['error'] = 'Usuario no encontrado';
             $this->redirect('usuarios');
         }
-        
+
         $data = [
             'title' => 'Editar Usuario',
             'page' => 'usuarios',
             'usuario' => $usuario
         ];
-        
+
         if($_POST) {
             $errors = $this->validarUsuario($_POST, $id);
-            
+
             if(empty($errors)) {
                 try {
                     if($usuarioModel->actualizar($id, $_POST)) {
@@ -93,7 +107,7 @@ class UsuariosController extends Controller {
                 $data['error'] = implode('<br>', $errors);
             }
         }
-        
+
         $this->view('usuarios/editar', $data);
     }
 
@@ -102,15 +116,18 @@ class UsuariosController extends Controller {
             $_SESSION['error'] = 'ID de usuario no especificado';
             $this->redirect('usuarios');
         }
-        
+
+        // Solo admins pueden eliminar usuarios
+        Auth::requireAdmin();
+
         // No permitir eliminarse a sí mismo
         if($id == $_SESSION['usuario_id']) {
             $_SESSION['error'] = 'No puedes desactivar tu propio usuario';
             $this->redirect('usuarios');
         }
-        
+
         $usuarioModel = $this->model('Usuario');
-        
+
         try {
             if($usuarioModel->desactivar($id)) {
                 $_SESSION['success'] = 'Usuario desactivado exitosamente';
@@ -120,14 +137,17 @@ class UsuariosController extends Controller {
         } catch(Exception $e) {
             $_SESSION['error'] = 'Error: ' . $e->getMessage();
         }
-        
+
         $this->redirect('usuarios');
     }
 
     // Método para ver usuarios inactivos
     public function inactivos() {
+        // Solo admins pueden ver usuarios inactivos
+        Auth::requireAdmin();
+
         $usuarioModel = $this->model('Usuario');
-        
+
         try {
             $usuarios = $usuarioModel->getInactivos();
             $data = [
@@ -155,9 +175,12 @@ class UsuariosController extends Controller {
             $_SESSION['error'] = 'ID de usuario no especificado';
             $this->redirect('usuarios/inactivos');
         }
-        
+
+        // Solo admins pueden reactivar usuarios
+        Auth::requireAdmin();
+
         $usuarioModel = $this->model('Usuario');
-        
+
         try {
             if($usuarioModel->reactivar($id)) {
                 $_SESSION['success'] = 'Usuario reactivado exitosamente';
@@ -167,7 +190,7 @@ class UsuariosController extends Controller {
         } catch(Exception $e) {
             $_SESSION['error'] = 'Error: ' . $e->getMessage();
         }
-        
+
         $this->redirect('usuarios/inactivos');
     }
 
@@ -179,17 +202,17 @@ class UsuariosController extends Controller {
      */
     private function validarUsuario(array $data, $id = null) {
         $errors = [];
-        
+
         // Validar nombre
         if(empty(trim($data['nombre']))) {
             $errors[] = 'El nombre es obligatorio';
         }
-        
+
         // Validar apellido paterno
         if(empty(trim($data['apellido_paterno']))) {
             $errors[] = 'El apellido paterno es obligatorio';
         }
-        
+
         // Validar correo
         if(empty(trim($data['correo']))) {
             $errors[] = 'El correo electrónico es obligatorio';
@@ -201,14 +224,14 @@ class UsuariosController extends Controller {
                 $errors[] = 'El correo electrónico ya está registrado';
             }
         }
-        
+
         // Validar contraseña (solo para crear)
         if(!$id && empty(trim($data['password']))) {
             $errors[] = 'La contraseña es obligatoria';
         } elseif(!$id && strlen($data['password']) < 6) {
             $errors[] = 'La contraseña debe tener al menos 6 caracteres';
         }
-        
+
         return $errors;
     }
 }
