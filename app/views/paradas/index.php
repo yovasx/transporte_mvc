@@ -55,6 +55,7 @@
                                 <td><?php echo htmlspecialchars($parada['nombre_parada']); ?></td>
                                 <td><?php echo htmlspecialchars($parada['latitud']); ?></td>
                                 <td><?php echo htmlspecialchars($parada['longitud']); ?></td>
+                                <td><?php echo htmlspecialchars($parada['id_ruta']); ?></td>
                                 <td><span class="badge badge-success"><?php echo $parada['estado']; ?></span></td>
                                 <td>
                                     <a href="<?php echo BASE_URL; ?>/paradas/editar/<?php echo $parada['id_parada']; ?>" class="btn btn-warning btn-sm" title="Editar">

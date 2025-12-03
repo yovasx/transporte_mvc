@@ -61,6 +61,7 @@ class ParadasController extends Controller {
         }
 
         $paradaModel = $this->model('Parada');
+        $rutaModel = $this->model('Ruta');
         $parada = $paradaModel->getById($id);
 
         if(!$parada) {
@@ -68,10 +69,13 @@ class ParadasController extends Controller {
             $this->redirect('paradas');
         }
 
+        $rutas = $rutaModel->getAll();
+
         $data = [
             'title' => 'Editar Parada',
             'page' => 'paradas',
-            'parada' => $parada
+            'parada' => $parada,
+            'rutas' => $rutas
         ];
 
         if($_POST) {

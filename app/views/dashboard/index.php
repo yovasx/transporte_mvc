@@ -76,7 +76,7 @@
                         <div class="icon">
                             <i class="fas fa-bus"></i>
                         </div>
-                        <a href="#" class="small-box-footer">
+                        <a href="<?php echo BASE_URL;?>/viajes_hoy" class="small-box-footer">
                             Más info <i class="fas fa-arrow-circle-right"></i>
                         </a>
                     </div>

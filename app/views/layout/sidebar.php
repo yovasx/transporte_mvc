@@ -3,11 +3,15 @@
     <!-- Brand Logo -->
     <a href="<?php echo BASE_URL; ?>/dashboard" class="brand-link">
         <i class="fas fa-bus brand-icon"></i>
-        <span class="brand-text font-weight-light"><strong>Transporte</strong>App</span>
+        <span class="brand-text font-weight-light"><strong>Movi</strong>Map</span>
     </a>
+<body class ="hold-transition sidebar-mini layout-fixed">
+    
 
-    <!-- Sidebar -->
+    <!-- Sidebar  -->
+     
     <div class="sidebar">
+
         <!-- Sidebar user panel (optional) -->
         <div class="user-panel mt-3 pb-3 mb-3 d-flex">
             <div class="image">
@@ -58,7 +62,7 @@
                 <li class="nav-item">
                     <a href="<?php echo BASE_URL; ?>/audit" class="nav-link <?php echo ($page == 'audit_logs') ? 'active' : ''; ?>">
                         <i class="nav-icon fas fa-file-alt"></i>
-                        <p>Auditoría - Registros</p>
+                        <p>Registros</p>
                     </a>
                 </li>
 
@@ -96,4 +100,7 @@
             </ul>
         </nav>
     </div>
+
 </aside>
+
+</body>

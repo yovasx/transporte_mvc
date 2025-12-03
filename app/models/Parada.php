@@ -8,6 +8,7 @@ class Parada {
     public $latitud;
     public $longitud;
     public $estado;
+    public $id_ruta;
 
     public function __construct() {
         $database = new Database();
@@ -33,9 +34,9 @@ class Parada {
     // Crear nueva parada
     public function crear($data) {
         // Allow optional association to a route via id_ruta
-        if (isset($data['id_ruta'])) {
-            $query = "INSERT INTO " . $this->table . " 
-                     (id_ruta, nombre_parada, latitud, longitud) 
+        if (isset($data['id_ruta']) && !empty($data['id_ruta'])) {
+            $query = "INSERT INTO " . $this->table . "
+                     (id_ruta, nombre_parada, latitud, longitud)
                      VALUES (:id_ruta, :nombre_parada, :latitud, :longitud)";
 
             $stmt = $this->conn->prepare($query);
@@ -46,8 +47,8 @@ class Parada {
                 ':longitud' => $data['longitud']
             ]);
         } else {
-            $query = "INSERT INTO " . $this->table . " 
-                     (nombre_parada, latitud, longitud) 
+            $query = "INSERT INTO " . $this->table . "
+                     (nombre_parada, latitud, longitud)
                      VALUES (:nombre_parada, :latitud, :longitud)";
 
             $stmt = $this->conn->prepare($query);
@@ -61,15 +62,16 @@ class Parada {
 
     // Actualizar parada
     public function actualizar($id, $data) {
-        $query = "UPDATE " . $this->table . " 
-                 SET nombre_parada = :nombre_parada, latitud = :latitud, longitud = :longitud
+        $query = "UPDATE " . $this->table . "
+                 SET nombre_parada = :nombre_parada, latitud = :latitud, longitud = :longitud, id_ruta = :id_ruta
                  WHERE id_parada = :id";
-        
+
         $stmt = $this->conn->prepare($query);
         return $stmt->execute([
             ':nombre_parada' => $data['nombre_parada'],
             ':latitud' => $data['latitud'],
             ':longitud' => $data['longitud'],
+            ':id_ruta' => $data['id_ruta'],
             ':id' => $id
         ]);
     }

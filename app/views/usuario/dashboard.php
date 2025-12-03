@@ -238,6 +238,21 @@ function buscarRutas() {
         success: function(response) {
             if (response.success) {
                 mostrarResultados(response.rutas, response.mensaje);
+
+                // Log the trip
+                $.ajax({
+                    url: '<?php echo BASE_URL; ?>/usuario/logTrip',
+                    type: 'POST',
+                    data: {
+                        tipo_accion: 'busqueda'
+                    },
+                    success: function(logResponse) {
+                        console.log('Viaje registrado:', logResponse);
+                    },
+                    error: function() {
+                        console.log('Error al registrar viaje');
+                    }
+                });
             } else {
                 $('#resultados').html(`
                     <div class="alert alert-warning">

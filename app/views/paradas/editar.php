@@ -36,6 +36,8 @@
                     <div class="form-group">
                         <label for="nombre_parada">Nombre de la Parada *</label>
                         <input type="text" class="form-control" id="nombre_parada" name="nombre_parada" required value="<?php echo htmlspecialchars($parada['nombre_parada']); ?>">
+
+                        
                     </div>
 
                     <div class="row">
@@ -44,15 +46,28 @@
                                 <label for="latitud">Latitud</label>
                                 <input type="text" class="form-control" id="latitud" name="latitud" value="<?php echo htmlspecialchars($parada['latitud']); ?>">
                             </div>
+                            
                         </div>
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="longitud">Longitud</label>
-                                <input type="text" class="form-control" id="longitud" name="longitud" value="<?php echo htmlspecialchars($parada['longitud']); ?>">
+                                <input type="text" class="form-control" id="longitud" name="longitud" value="<?php echo htmlspecialchars($parada['longitud']); ?>">                               
                             </div>
-                        </div>
+                            <div class="form-group">
+                                <label for="id_ruta">Ruta</label>
+                                <select class="form-control" id="id_ruta" name="id_ruta">
+                                    <option value="">Seleccionar Ruta</option>
+                                    <?php foreach($rutas as $ruta): ?>
+                                        <option value="<?php echo $ruta['id_ruta']; ?>" <?php echo ($parada['id_ruta'] == $ruta['id_ruta']) ? 'selected' : ''; ?>>
+                                            <?php echo htmlspecialchars($ruta['nombre_ruta']); ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
+                                
+                            </div>
+                            
                     </div>
-
+                    
                 </div>
                 <div class="card-footer">
                     <button type="submit" class="btn btn-primary"><i class="fas fa-save mr-1"></i>Actualizar Parada</button>

@@ -121,6 +121,43 @@ class DashboardController extends Controller {
         $this->view('dashboard/mapa', $data);
     }
 
+    public function viajes_hoy() {
+        Auth::requireLogin();
+        Auth::requireAdmin();
+
+        $rutaModel = $this->model('Ruta');
+        $viajeModel = $this->model('Viaje');
+
+        $rutas = $rutaModel->getAll();
+        $viajes = [];
+        $total_viajes = 0;
+        $fecha_seleccionada = date('Y-m-d');
+        $ruta_seleccionada = null;
+
+        if ($_POST) {
+            $fecha_seleccionada = $_POST['fecha'] ?? date('Y-m-d');
+            $ruta_seleccionada = $_POST['id_ruta'] ?? null;
+
+            if ($ruta_seleccionada) {
+                $viajes = $viajeModel->getByRutaFecha($ruta_seleccionada, $fecha_seleccionada);
+                $total_viajes = $viajeModel->contarByRutaFecha($ruta_seleccionada, $fecha_seleccionada);
+            }
+        }
+
+        $data = [
+            'title' => 'Viajes de Hoy - MoviMap',
+            'page' => 'viajes_hoy',
+            'rutas' => $rutas,
+            'viajes' => $viajes,
+            'total_viajes' => $total_viajes,
+            'fecha_seleccionada' => $fecha_seleccionada,
+            'ruta_seleccionada' => $ruta_seleccionada,
+            'usuario_nombre' => $_SESSION['usuario_nombre'] ?? null
+        ];
+
+        $this->view('viajes_hoy/index', $data);
+    }
+
     // Método para vistas públicas (sin sidebar ni navbar de admin)
     protected function viewPublic($view, $data = []) {
         $data = $data ?? [];
