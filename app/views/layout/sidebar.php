@@ -41,21 +41,21 @@
                 <li class="nav-item">
                     <a href="<?php echo BASE_URL; ?>/usuarios" class="nav-link <?php echo ($page == 'usuarios') ? 'active' : ''; ?>">
                         <i class="nav-icon fas fa-users"></i>
-                        <p>Usuarios <span class="badge badge-info right">1,254</span></p>
+                        <p>Usuarios <span class="badge badge-info right"><?php echo $totalUsuarios ?? '0'; ?></span></p>
                     </a>
                 </li>
 
                 <li class="nav-item">
                     <a href="<?php echo BASE_URL; ?>/rutas" class="nav-link <?php echo ($page == 'rutas') ? 'active' : ''; ?>">
                         <i class="nav-icon fas fa-route"></i>
-                        <p>Rutas <span class="badge badge-success right">48</span></p>
+                        <p>Rutas <span class="badge badge-success right"><?php echo $totalRutas ?? '0'; ?></span></p>
                     </a>
                 </li>
 
                 <li class="nav-item">
                     <a href="<?php echo BASE_URL; ?>/paradas" class="nav-link <?php echo ($page == 'paradas') ? 'active' : ''; ?>">
                         <i class="nav-icon fas fa-map-marker-alt"></i>
-                        <p>Paradas <span class="badge badge-warning right">156</span></p>
+                        <p>Paradas <span class="badge badge-warning right"><?php echo $totalParadas ?? '0'; ?></span></p>
                     </a>
                 </li>
 
@@ -71,7 +71,7 @@
                 <li class="nav-header">REPORTES</li>
 
                 <li class="nav-item">
-                    <a href="#" class="nav-link">
+                    <a href="<?php echo BASE_URL; ?>/reportes" class="nav-link <?php echo ($page == 'reportes') ? 'active' : ''; ?>">
                         <i class="nav-icon fas fa-chart-bar"></i>
                         <p>Reportes</p>
                     </a>
