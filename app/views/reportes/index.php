@@ -80,6 +80,12 @@
                         <div class="card-header">
                             <h3 class="card-title">Detalle: Rutas Más Consultadas</h3>
                             <div class="card-tools">
+                                <a href="<?php echo BASE_URL; ?>/reportes/generatePdf?type=rutas" class="btn btn-danger btn-sm mr-2">
+                                    <i class="fas fa-file-pdf"></i> PDF
+                                </a>
+                                <a href="<?php echo BASE_URL; ?>/reportes/generateExcel?type=rutas" class="btn btn-success btn-sm mr-2">
+                                    <i class="fas fa-file-excel"></i> Excel
+                                </a>
                                 <button type="button" class="btn btn-tool" data-toggle="collapse" data-target="#rutasSection">
                                     <i class="fas fa-minus"></i>
                                 </button>
@@ -130,6 +136,12 @@
                         <div class="card-header">
                             <h3 class="card-title">Detalle: Destinos Más Buscados</h3>
                             <div class="card-tools">
+                                <a href="<?php echo BASE_URL; ?>/reportes/generatePdf?type=destinos" class="btn btn-danger btn-sm mr-2">
+                                    <i class="fas fa-file-pdf"></i> PDF
+                                </a>
+                                <a href="<?php echo BASE_URL; ?>/reportes/generateExcel?type=destinos" class="btn btn-success btn-sm mr-2">
+                                    <i class="fas fa-file-excel"></i> Excel
+                                </a>
                                 <button type="button" class="btn btn-tool" data-toggle="collapse" data-target="#destinosSection">
                                     <i class="fas fa-minus"></i>
                                 </button>
@@ -180,6 +192,12 @@
                         <div class="card-header">
                             <h3 class="card-title">Detalle: Paradas Más Cercanas Usadas</h3>
                             <div class="card-tools">
+                                <a href="<?php echo BASE_URL; ?>/reportes/generatePdf?type=paradas" class="btn btn-danger btn-sm mr-2">
+                                    <i class="fas fa-file-pdf"></i> PDF
+                                </a>
+                                <a href="<?php echo BASE_URL; ?>/reportes/generateExcel?type=paradas" class="btn btn-success btn-sm mr-2">
+                                    <i class="fas fa-file-excel"></i> Excel
+                                </a>
                                 <button type="button" class="btn btn-tool" data-toggle="collapse" data-target="#paradasSection">
                                     <i class="fas fa-minus"></i>
                                 </button>
